@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { connectDB } = require('./config/dbConfig');
 const authRoutes = require('./routes/authRoutes');
-const User = require('./models/user'); // Import the User model
+const User = require('./models/user');
+const passport = require('./config/passportConfig'); 
 
 const app = express();
 

@@ -57,3 +57,37 @@ exports.loginUser = async (req, res) => {
     });
   }
 };
+
+exports.googleAuthCallback = async (req, res) => {
+  try {
+    const { id, displayName, emails } = req.user;
+
+    let user = await User.findOne({
+      where: { googleId: id },
+    });
+    if (!user) {
+      user = await User.create({
+        googleId: id,
+        username: displayName,
+        email: emails[0].value,
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    );
+
+    res.redirect(`http://localhost:3000?token=${token}`);
+  } catch (error) {
+    res.status(500).json({
+      error: "Google OAuth failed",
+      details: error.message,
+    });
+  }
+};
